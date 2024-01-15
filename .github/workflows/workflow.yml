@@ -27,7 +27,7 @@ jobs:
     needs: [build, lint]
     with:
       environmentType: Test
-      resourceGroupName: ToyWebsiteTest
+      resourceGroupName: BatesToyWebsiteTest
       reviewApiUrl: https://sandbox.contoso.com/reviews
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_TEST }}
@@ -44,7 +44,7 @@ jobs:
     - deploy-test
     with:
       environmentType: Production
-      resourceGroupName: ToyWebsiteProduction
+      resourceGroupName: BatesToyWebsiteProduction
       reviewApiUrl: https://api.contoso.com/reviews
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID_PRODUCTION }}
