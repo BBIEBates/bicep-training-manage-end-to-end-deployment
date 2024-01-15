@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=./deploy.yml
+
 name: deploy
 
 on:
@@ -63,6 +65,7 @@ jobs:
     environment: ${{ inputs.environmentType }}
     runs-on: ubuntu-latest
     outputs:
+      appServiceAppName: ${{ steps.deploy.outputs.appServiceAppName }}
       appServiceAppHostName: ${{ steps.deploy.outputs.appServiceAppHostName }}
     steps:
     - uses: actions/checkout@v3
@@ -84,6 +87,23 @@ jobs:
            environmentType=${{ inputs.environmentType }}
            reviewApiUrl=${{ inputs.reviewApiUrl }}
            reviewApiKey=${{ secrets.reviewApiKey }}
+  deploy-website:
+    needs: deploy
+    environment: ${{ inputs.environmentType }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v3
+    - uses: azure/login@v1
+      name: Sign in to Azure
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - uses: azure/webapps-deploy@v2
+      name: Deploy website
+      with:
+        app-name: ${{ needs.deploy.outputs.appServiceAppName }}
+        package: website/publish.zip
 
   smoke-test:
     runs-on: ubuntu-latest
